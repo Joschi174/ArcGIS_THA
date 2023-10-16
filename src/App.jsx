@@ -1,17 +1,17 @@
 import React, { useRef, useEffect } from "react";
-import Expand from '@arcgis/core/widgets/Expand';
+
 import MapView from "@arcgis/core/views/MapView";
 import ArcGISMap from "@arcgis/core/Map";
 import FeatureLayer from "@arcgis/core/layers/FeatureLayer.js";
 import Popup from "@arcgis/core/widgets/Popup.js";
-import Symbol from "@arcgis/core/symbols/Symbol.js";
+
 
 import "./App.css";
 
 function App() {
 
   const mapDiv = useRef(null);
-  const locatorUrl = "https://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer";
+  
 
   useEffect(() => {
     if (mapDiv.current) {
