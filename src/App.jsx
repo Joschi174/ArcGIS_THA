@@ -2,7 +2,8 @@ import React, { useRef, useEffect } from "react";
 import Bookmarks from '@arcgis/core/widgets/Bookmarks';
 import Expand from '@arcgis/core/widgets/Expand';
 import MapView from "@arcgis/core/views/MapView";
-import WebMap from "@arcgis/core/WebMap";
+import ArcGISMap from "@arcgis/core/Map";
+import FeatureLayer from "@arcgis/core/layers/FeatureLayer.js";
 
 import "./App.css";
 
@@ -12,18 +13,30 @@ function App() {
 
   useEffect(() => {
     if (mapDiv.current) {
-      /**
-       * Initialize application
-       */
-      const webmap = new WebMap({
-        portalItem: {
-          id: "aa1d3f80270146208328cf66d022e09c"
+
+      
+
+      const fl = new FeatureLayer({
+        portalItem: {  // autocasts as esri/portal/PortalItem
+          id: "6996f03a1b364dbab4008d99380370ed",
+          url: "https://services.arcgis.com/P3ePLMYs2RVChkJx/ArcGIS/rest/services/World_Cities/FeatureServer/"
+          
         }
       });
 
+
+
+      const mymap = new ArcGISMap({
+        basemap: 'gray-vector'
+      });
+
+      mymap.add(fl);
+
       const view = new MapView({
         container: mapDiv.current,
-        map: webmap
+        map: mymap,
+        center: [7.6261,51.9607],
+        zoom: 10
       });
 
       const bookmarks = new Bookmarks({
@@ -41,14 +54,6 @@ function App() {
       // Add the widget to the top-right corner of the view
       view.ui.add(bkExpand, "top-right");
 
-      // bonus - how many bookmarks in the webmap?
-      webmap.when(() => {
-        if (webmap.bookmarks && webmap.bookmarks.length) {
-          console.log("Bookmarks: ", webmap.bookmarks.length);
-        } else {
-          console.log("No bookmarks in this webmap.");
-        }
-      });
     }
   }, []);
 
