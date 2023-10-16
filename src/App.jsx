@@ -6,6 +6,8 @@ import FeatureLayer from "@arcgis/core/layers/FeatureLayer.js";
 import Popup from "@arcgis/core/widgets/Popup.js";
 
 
+
+
 import "./App.css";
 
 function App() {
@@ -79,11 +81,12 @@ function App() {
 
       
       view.on("click", (e) => {
-        const lat = Math.round(e.mapPoint.latitude * 1000) / 1000;
-        const lon = Math.round(e.mapPoint.longitude * 1000) / 1000;
+        const lat = e.mapPoint.latitude;
+        const lon = e.mapPoint.longitude;
+        console.log(e.mapPoint.spatialReference);
         
         view.popupEnabled = false;
-        view.popup.title = lon + ", " + lat;
+        view.popup.title = "lat: " + lat +"\nlon: " + lon;
         view.popup.open();
       });
 
