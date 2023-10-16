@@ -1,54 +1,95 @@
 import React, { useRef, useEffect } from "react";
-import Bookmarks from '@arcgis/core/widgets/Bookmarks';
-import Expand from '@arcgis/core/widgets/Expand';
+
 import MapView from "@arcgis/core/views/MapView";
-import WebMap from "@arcgis/core/WebMap";
+import ArcGISMap from "@arcgis/core/Map";
+import FeatureLayer from "@arcgis/core/layers/FeatureLayer.js";
+import Popup from "@arcgis/core/widgets/Popup.js";
+
+
+
 
 import "./App.css";
 
 function App() {
 
   const mapDiv = useRef(null);
+  
 
   useEffect(() => {
     if (mapDiv.current) {
-      /**
-       * Initialize application
-       */
-      const webmap = new WebMap({
-        portalItem: {
-          id: "aa1d3f80270146208328cf66d022e09c"
+
+      var cityPopulation = {
+        type: "size",
+        field: "POP",
+        legendOptions:{
+          title: "Population"
+        },
+        stops:[
+          {value: 100000, size: "5"},
+          {value: 250000, size: "10"},
+          {value: 500000, size: "20"},
+          {value: 1000000, size: "30"},
+          {value: 10000000, size: "50"}
+        ]
+      };
+
+      const citiesRenderer = {
+        type: "simple", 
+        visualVariables: [cityPopulation ],
+        symbol: {
+          type: "simple-marker", 
+          size: 5,
+          color: [150, 0, 150],
+          outline: null
+        }
+        
+      };
+      
+
+      const fl = new FeatureLayer({
+        portalItem: { 
+          id: "6996f03a1b364dbab4008d99380370ed",
+          url: "https://services.arcgis.com/P3ePLMYs2RVChkJx/ArcGIS/rest/services/World_Cities/FeatureServer/" ,
+          renderer: citiesRenderer, 
         }
       });
+
+      
+
+
+
+      const mymap = new ArcGISMap({
+        basemap: 'dark-gray-vector'
+      });
+
+      fl.renderer = citiesRenderer;
+      mymap.add(fl);
 
       const view = new MapView({
         container: mapDiv.current,
-        map: webmap
+        map: mymap,
+        center: [7.6261,51.9607], //MS
+        zoom: 6,
+        popup: new Popup({
+          dockEnabled: true,
+          dockOptions: {
+            breakpoint: false,
+            position: "top-right"
+          }
+        })
       });
 
-      const bookmarks = new Bookmarks({
-        view,
-        // allows bookmarks to be added, edited, or deleted
-        editingEnabled: true
+      
+      view.on("click", (e) => {
+        const lat = e.mapPoint.latitude;
+        const lon = e.mapPoint.longitude;
+        console.log(e.mapPoint.spatialReference);
+        
+        view.popupEnabled = false;
+        view.popup.title = "lat: " + lat +"\nlon: " + lon;
+        view.popup.open();
       });
 
-      const bkExpand = new Expand({
-        view,
-        content: bookmarks,
-        expanded: true
-      });
-
-      // Add the widget to the top-right corner of the view
-      view.ui.add(bkExpand, "top-right");
-
-      // bonus - how many bookmarks in the webmap?
-      webmap.when(() => {
-        if (webmap.bookmarks && webmap.bookmarks.length) {
-          console.log("Bookmarks: ", webmap.bookmarks.length);
-        } else {
-          console.log("No bookmarks in this webmap.");
-        }
-      });
     }
   }, []);
 
