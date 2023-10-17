@@ -1,11 +1,9 @@
 import React, { useRef, useEffect } from "react";
-
 import MapView from "@arcgis/core/views/MapView";
 import ArcGISMap from "@arcgis/core/Map";
 import FeatureLayer from "@arcgis/core/layers/FeatureLayer.js";
 import Popup from "@arcgis/core/widgets/Popup.js";
 import Legend from "@arcgis/core/widgets/Legend.js";
-
 
 
 
@@ -54,9 +52,6 @@ function App() {
         }
       });
 
-      
-
-
 
       const mymap = new ArcGISMap({
         basemap: 'dark-gray-vector'
@@ -81,7 +76,7 @@ function App() {
       });
       view.ui.add(new Legend({ view: view }), "bottom-left");
 
-      
+
       view.on("click", (e) => {
         const lat = e.mapPoint.latitude;
         const lon = e.mapPoint.longitude;
@@ -89,10 +84,9 @@ function App() {
         
         view.popupEnabled = false;
         view.popup.title = "City_Name_Placeholder"
-        view.popup.content = "lat: " + lat +"\nlon: " + lon;
+        view.popup.content = "lat: " + lat +" lon: " + lon;
         view.popup.open();
       });
-
     }
   }, []);
 
