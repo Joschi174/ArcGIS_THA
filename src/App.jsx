@@ -80,10 +80,10 @@ function App() {
       view.on("click", (e) => {
         const lat = e.mapPoint.latitude;
         const lon = e.mapPoint.longitude;
-        console.log(e.mapPoint.spatialReference);
-        
+                
         view.popupEnabled = false;
-        view.popup.title = "City_Name_Placeholder"
+        view.popup.viewModel.includeDefaultActions = false;
+        view.popup.title = "City_Name_Placeholder";
         view.popup.content = "lat: " + lat +" lon: " + lon;
         view.popup.open();
       });
