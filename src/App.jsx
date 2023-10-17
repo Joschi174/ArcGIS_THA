@@ -4,6 +4,7 @@ import MapView from "@arcgis/core/views/MapView";
 import ArcGISMap from "@arcgis/core/Map";
 import FeatureLayer from "@arcgis/core/layers/FeatureLayer.js";
 import Popup from "@arcgis/core/widgets/Popup.js";
+import Legend from "@arcgis/core/widgets/Legend.js";
 
 
 
@@ -64,6 +65,7 @@ function App() {
 
       fl.renderer = citiesRenderer;
       mymap.add(fl);
+      
 
       const view = new MapView({
         container: mapDiv.current,
@@ -78,6 +80,7 @@ function App() {
           }
         })
       });
+      view.ui.add(new Legend({ view: view }), "bottom-left");
 
       
       view.on("click", (e) => {
@@ -86,7 +89,8 @@ function App() {
         console.log(e.mapPoint.spatialReference);
         
         view.popupEnabled = false;
-        view.popup.title = "lat: " + lat +"\nlon: " + lon;
+        view.popup.title = "City_Name_Placeholder"
+        view.popup.content = "<li>lat: " + lat +"\nlon: " + lon;
         view.popup.open();
       });
 
