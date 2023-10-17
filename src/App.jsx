@@ -26,11 +26,10 @@ function App() {
           title: "Population"
         },
         stops:[
-          {value: 100000, size: "5"},
-          {value: 250000, size: "10"},
+          {value: 250000, size: "5"},
           {value: 500000, size: "20"},
-          {value: 1000000, size: "30"},
-          {value: 10000000, size: "50"}
+          {value: 1000000, size: "40"},
+          {value: 10000000, size: "80"}
         ]
       };
 
