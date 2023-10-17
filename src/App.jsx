@@ -1,10 +1,9 @@
 import React, { useRef, useEffect } from "react";
-
 import MapView from "@arcgis/core/views/MapView";
 import ArcGISMap from "@arcgis/core/Map";
 import FeatureLayer from "@arcgis/core/layers/FeatureLayer.js";
 import Popup from "@arcgis/core/widgets/Popup.js";
-
+import Legend from "@arcgis/core/widgets/Legend.js";
 
 
 
@@ -25,11 +24,10 @@ function App() {
           title: "Population"
         },
         stops:[
-          {value: 100000, size: "5"},
-          {value: 250000, size: "10"},
+          {value: 250000, size: "5"},
           {value: 500000, size: "20"},
-          {value: 1000000, size: "30"},
-          {value: 10000000, size: "50"}
+          {value: 1000000, size: "40"},
+          {value: 10000000, size: "80"}
         ]
       };
 
@@ -54,9 +52,6 @@ function App() {
         }
       });
 
-      
-
-
 
       const mymap = new ArcGISMap({
         basemap: 'dark-gray-vector'
@@ -64,6 +59,7 @@ function App() {
 
       fl.renderer = citiesRenderer;
       mymap.add(fl);
+      
 
       const view = new MapView({
         container: mapDiv.current,
@@ -78,18 +74,19 @@ function App() {
           }
         })
       });
+      view.ui.add(new Legend({ view: view }), "bottom-left");
 
-      
+
       view.on("click", (e) => {
         const lat = e.mapPoint.latitude;
         const lon = e.mapPoint.longitude;
         console.log(e.mapPoint.spatialReference);
         
         view.popupEnabled = false;
-        view.popup.title = "lat: " + lat +"\nlon: " + lon;
+        view.popup.title = "City_Name_Placeholder"
+        view.popup.content = "lat: " + lat +" lon: " + lon;
         view.popup.open();
       });
-
     }
   }, []);
 
