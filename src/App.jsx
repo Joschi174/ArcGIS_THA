@@ -89,7 +89,7 @@ function App() {
         
         view.popupEnabled = false;
         view.popup.title = "City_Name_Placeholder"
-        view.popup.content = "<li>lat: " + lat +"\nlon: " + lon;
+        view.popup.content = "lat: " + lat +"\nlon: " + lon;
         view.popup.open();
       });
 
