@@ -1,30 +1,22 @@
-import React, { useRef, useEffect } from "react";
+import React, { useRef, useEffect, useState } from "react";
 import MapView from "@arcgis/core/views/MapView";
 import ArcGISMap from "@arcgis/core/Map";
 import FeatureLayer from "@arcgis/core/layers/FeatureLayer.js";
 import Popup from "@arcgis/core/widgets/Popup.js";
 import Legend from "@arcgis/core/widgets/Legend.js";
-import Expand from "@arcgis/core/widgets/Expand.js";
+import axios from "axios";
+import WeatherTable from "./WeatherTable";
 import "./App.css";
 
 
 function App() {
 
   const mapDiv = useRef(null);
+  var weatherData = [
+    "dummy"
+  ];
+
   var lon, lat;
-  var expandCoordinates = new Expand({
-    expandTooltip: "Open for Coordinates",
-    collapseTooltip: "Close coordinates",
-    expanded: true,
-  });
-
-  var expandWeather = new Expand({
-    expandTooltip: "Open for Weather",
-    collapseTooltip: "Close Weather",
-    expanded: true,
-  });
-
-
 
   useEffect(() => {
 
@@ -95,50 +87,64 @@ function App() {
         lat = e.mapPoint.latitude;
         lon = e.mapPoint.longitude;
                 
-        expandCoordinates.view = view;
-        expandCoordinates.content = getCityInfo(lon,lat);
-        expandCoordinates.content += getWeatherInfo(lon,lat);
+        updateExpandContent(lon,lat)
         
       });
       
-      function getCityInfo(lon, lat){
-        var cityInfo  =  "<h2> City name </h2>"
-                      +  "lon: <b><span >" + lon + "</span></b> <br/>"
-                      + "lat: <b><span >" + lat + "</span></b> <br/>"
 
-        return cityInfo;
-      }
+      async function updateExpandContent(lon,lat){
 
-      function getWeatherInfo(lon,lat){
-
-        var weatherInfo =  "<h2> Weatherinfo" 
-                        +  "</h2>"
-                        +  "dummyinformation asdasd"
-
-        fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&units=metric&APPID=6b904086651c872d0e2c58c1529d2dcb`)
-        .then(result => {
+        
+        let result = await axios.get(`https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&units=metric&APPID=6b904086651c872d0e2c58c1529d2dcb`)
+          weatherData = result.data
+          
+          //to cehck json structure
+          console.log("weatherdata json");
           console.log(result);
-          weatherInfo = result;
-        });
 
-        axios
-                        
+          let content = document.createElement("WeatherTable");
+          
+          
+          let fragment      = "<h2> Location </h2>"
+                            + "lon: <b><span >" + lon + "</span></b> <br/>"
+                            + "lat: <b><span >" + lat + "</span></b> <br/><br/>"
+                            + "<h2> Weatherdata </h2>"
+                            +"<table style='width:100%'>"
+                           
 
-        return weatherInfo;
+          
+          
+          for (let index = 0; index < weatherData?.list.length; index++) {
+            const element = weatherData?.list[index];
+            
+            fragment  +="<tr>"
+                      +   "<td>"+new Date(element.dt*1000).toLocaleDateString()+"</td>"
+                      +   "<td>"+new Date(element.dt*1000).getHours()+"h</td>"
+                      +    "<td>"+element.main.temp+"</td>"
+                      +    "<td>"+element.weather[0].description+"</td>"
+                      +    "<td>"+element.wind.speed+"</td>"
+                      +  "</tr>"
+          }
+          fragment += "</table>";
+          content.innerHTML = fragment;
+          
 
+
+
+          view.popupEnabled = false;
+          view.popup.viewModel.includeDefaultActions = false;
+          view.popup.title = "<h2>" +weatherData?.city.name+ "</h2>";
+          view.popup.content = content;
+          view.popup.open();
       }
-
-      view.ui.add(expandCoordinates, {
-        position: "top-right",
-        index: 1
-      });
-
-
-
     }
   }, []);
 
-  return <div className="mapDiv" ref={mapDiv}></div>;
+  return (
+    <div className="mapDiv" ref={mapDiv}>
+     
+    </div>
+  );
 }
 
 export default App;
