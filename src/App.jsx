@@ -5,8 +5,10 @@ import FeatureLayer from "@arcgis/core/layers/FeatureLayer.js";
 import Popup from "@arcgis/core/widgets/Popup.js";
 import Legend from "@arcgis/core/widgets/Legend.js";
 import axios from "axios";
-import WeatherTable from "./WeatherTable";
+import * as ReactDOM from 'react-dom/client'
 import "./App.css";
+import WeatherTable from "./WeatherTable";
+import LocationData from "./LocationData";
 
 
 function App() {
@@ -43,7 +45,7 @@ function App() {
         symbol: {
           type: "simple-marker", 
           size: 5,
-          color: [150, 0, 150],
+          color: [51, 0, 51],
           outline: null
         }
         
@@ -97,54 +99,27 @@ function App() {
         
         let result = await axios.get(`https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&units=metric&APPID=6b904086651c872d0e2c58c1529d2dcb`)
           weatherData = result.data
-          
-          //to cehck json structure
-          console.log("weatherdata json");
-          console.log(result);
 
-          let content = document.createElement("WeatherTable");
+          let content = document.createElement("div");
           
-          
-          let fragment      = "<h2> Location </h2>"
-                            + "lon: <b><span >" + lon + "</span></b> <br/>"
-                            + "lat: <b><span >" + lat + "</span></b> <br/><br/>"
-                            + "<h2> Weatherdata </h2>"
-                            +"<table style='width:100%'>"
-                           
-
-          
-          
-          for (let index = 0; index < weatherData?.list.length; index++) {
-            const element = weatherData?.list[index];
-            
-            fragment  +="<tr>"
-                      +   "<td>"+new Date(element.dt*1000).toLocaleDateString()+"</td>"
-                      +   "<td>"+new Date(element.dt*1000).getHours()+"h</td>"
-                      +    "<td>"+element.main.temp+"</td>"
-                      +    "<td>"+element.weather[0].description+"</td>"
-                      +    "<td>"+element.wind.speed+"</td>"
-                      +  "</tr>"
-          }
-          fragment += "</table>";
-          content.innerHTML = fragment;
-          
-
-
-
           view.popupEnabled = false;
           view.popup.viewModel.includeDefaultActions = false;
           view.popup.title = "<h2>" +weatherData?.city.name+ "</h2>";
           view.popup.content = content;
+
+          let widgetRoot = ReactDOM.createRoot(content);
+          widgetRoot.render(
+            <div>
+              <LocationData lon={lon} lat={lat}/>
+              <WeatherTable data={weatherData.list}/>
+            </div> 
+          )
           view.popup.open();
       }
     }
   }, []);
 
-  return (
-    <div className="mapDiv" ref={mapDiv}>
-     
-    </div>
-  );
+  return (<div className="mapDiv" ref={mapDiv}></div> );
 }
 
 export default App;
