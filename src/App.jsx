@@ -4,17 +4,31 @@ import ArcGISMap from "@arcgis/core/Map";
 import FeatureLayer from "@arcgis/core/layers/FeatureLayer.js";
 import Popup from "@arcgis/core/widgets/Popup.js";
 import Legend from "@arcgis/core/widgets/Legend.js";
-
-
-
+import Expand from "@arcgis/core/widgets/Expand.js";
 import "./App.css";
+
 
 function App() {
 
   const mapDiv = useRef(null);
-  
+  var lon, lat;
+  var expandCoordinates = new Expand({
+    expandTooltip: "Open for Coordinates",
+    collapseTooltip: "Close coordinates",
+    expanded: true,
+  });
+
+  var expandWeather = new Expand({
+    expandTooltip: "Open for Weather",
+    collapseTooltip: "Close Weather",
+    expanded: true,
+  });
+
+
 
   useEffect(() => {
+
+
     if (mapDiv.current) {
 
       var cityPopulation = {
@@ -78,15 +92,49 @@ function App() {
 
 
       view.on("click", (e) => {
-        const lat = e.mapPoint.latitude;
-        const lon = e.mapPoint.longitude;
+        lat = e.mapPoint.latitude;
+        lon = e.mapPoint.longitude;
                 
-        view.popupEnabled = false;
-        view.popup.viewModel.includeDefaultActions = false;
-        view.popup.title = "City_Name_Placeholder";
-        view.popup.content = "lat: " + lat +" lon: " + lon;
-        view.popup.open();
+        expandCoordinates.view = view;
+        expandCoordinates.content = getCityInfo(lon,lat);
+        expandCoordinates.content += getWeatherInfo(lon,lat);
+        
       });
+      
+      function getCityInfo(lon, lat){
+        var cityInfo  =  "<h2> City name </h2>"
+                      +  "lon: <b><span >" + lon + "</span></b> <br/>"
+                      + "lat: <b><span >" + lat + "</span></b> <br/>"
+
+        return cityInfo;
+      }
+
+      function getWeatherInfo(lon,lat){
+
+        var weatherInfo =  "<h2> Weatherinfo" 
+                        +  "</h2>"
+                        +  "dummyinformation asdasd"
+
+        fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&units=metric&APPID=6b904086651c872d0e2c58c1529d2dcb`)
+        .then(result => {
+          console.log(result);
+          weatherInfo = result;
+        });
+
+        axios
+                        
+
+        return weatherInfo;
+
+      }
+
+      view.ui.add(expandCoordinates, {
+        position: "top-right",
+        index: 1
+      });
+
+
+
     }
   }, []);
 
