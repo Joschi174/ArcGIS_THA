@@ -1,0 +1,19 @@
+{
+    "cod": "200",
+    "message": 0,
+    "cnt": 40,
+    "list": [],
+    "city": {
+        "id": 2873957,
+        "name": "Manfort",
+        "coord": {
+            "lat": 51,
+            "lon": 7
+        },
+        "country": "DE",
+        "population": 0,
+        "timezone": 7200,
+        "sunrise": 1697695258,
+        "sunset": 1697733167
+    }
+}
