@@ -8,16 +8,16 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [16.x]
+       node-version: [16.x]
 
-        steps:
-        - uses: actions/checkout@v2
-        - name: Use node.js ${{ matrix.node-version}}
-          uses: actions/setup-node@v1
-          with:
-            node-version: ${{ matrix.node-version}}
-        - name: npm install
-          run: npm ci
-        - name: tests
-          run: npm test
+       steps:
+       - uses: actions/checkout@v2
+       - name: Use node.js ${{ matrix.node-version}}
+         uses: actions/setup-node@v1
+         with:
+           node-version: ${{ matrix.node-version}}
+       - name: npm install
+         run: npm ci
+       - name: tests
+         run: npm test
 
