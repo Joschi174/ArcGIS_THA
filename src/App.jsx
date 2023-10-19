@@ -1,20 +1,28 @@
-import React, { useRef, useEffect } from "react";
+import React, { useRef, useEffect, useState } from "react";
 import MapView from "@arcgis/core/views/MapView";
 import ArcGISMap from "@arcgis/core/Map";
 import FeatureLayer from "@arcgis/core/layers/FeatureLayer.js";
 import Popup from "@arcgis/core/widgets/Popup.js";
 import Legend from "@arcgis/core/widgets/Legend.js";
-
-
-
+import axios from "axios";
+import * as ReactDOM from 'react-dom/client'
 import "./App.css";
+import WeatherTable from "./WeatherTable";
+import LocationData from "./LocationData";
+
 
 function App() {
 
   const mapDiv = useRef(null);
-  
+  var weatherData = [
+    "dummy"
+  ];
+
+  var lon, lat;
 
   useEffect(() => {
+
+
     if (mapDiv.current) {
 
       var cityPopulation = {
@@ -37,7 +45,7 @@ function App() {
         symbol: {
           type: "simple-marker", 
           size: 5,
-          color: [150, 0, 150],
+          color: [51, 0, 51],
           outline: null
         }
         
@@ -78,19 +86,40 @@ function App() {
 
 
       view.on("click", (e) => {
-        const lat = e.mapPoint.latitude;
-        const lon = e.mapPoint.longitude;
+        lat = e.mapPoint.latitude;
+        lon = e.mapPoint.longitude;
                 
-        view.popupEnabled = false;
-        view.popup.viewModel.includeDefaultActions = false;
-        view.popup.title = "City_Name_Placeholder";
-        view.popup.content = "lat: " + lat +" lon: " + lon;
-        view.popup.open();
+        updateExpandContent(lon,lat)
+        
       });
+      
+
+      async function updateExpandContent(lon,lat){
+
+        
+        let result = await axios.get(`https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&units=metric&APPID=6b904086651c872d0e2c58c1529d2dcb`)
+          weatherData = result.data
+
+          let content = document.createElement("div");
+          
+          view.popupEnabled = false;
+          view.popup.viewModel.includeDefaultActions = false;
+          view.popup.title = "<h2>" +weatherData?.city.name+ "</h2>";
+          view.popup.content = content;
+
+          let widgetRoot = ReactDOM.createRoot(content);
+          widgetRoot.render(
+            <div>
+              <LocationData lon={lon} lat={lat}/>
+              <WeatherTable data={weatherData.list}/>
+            </div> 
+          )
+          view.popup.open();
+      }
     }
   }, []);
 
-  return <div className="mapDiv" ref={mapDiv}></div>;
+  return (<div className="mapDiv" ref={mapDiv}></div> );
 }
 
 export default App;
